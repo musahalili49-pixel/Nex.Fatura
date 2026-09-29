@@ -1,0 +1,2949 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistemi i Faturave</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eef4f8;
+  color:#17212b;
+}
+
+header{
+  background:linear-gradient(135deg,#082653,#087bb4,#10a9a5);
+  color:white;
+  padding:20px;
+  box-shadow:0 3px 15px rgba(0,0,0,.15);
+}
+
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.logo{
+  width:55px;
+  height:55px;
+  border-radius:15px;
+  background:white;
+  color:#082653;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.brand h1{
+  margin:0;
+  font-size:25px;
+}
+
+.brand p{
+  margin:4px 0 0;
+  opacity:.85;
+}
+
+.nav{
+  max-width:1200px;
+  margin:15px auto 0;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.nav button{
+  border:0;
+  background:rgba(255,255,255,.16);
+  color:white;
+  padding:11px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.nav button:hover{
+  background:white;
+  color:#082653;
+}
+
+.container{
+  max-width:1200px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 5px 20px rgba(0,0,0,.07);
+}
+
+.card h2{
+  margin-top:0;
+  color:#082653;
+}
+
+.section-title{
+  font-size:19px;
+  font-weight:bold;
+  margin:10px 0 15px;
+  color:#087bb4;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.field label{
+  font-weight:bold;
+  font-size:14px;
+  color:#43515d;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccd6df;
+  border-radius:9px;
+  font-size:15px;
+  outline:none;
+  background:white;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#087bb4;
+  box-shadow:0 0 0 3px rgba(8,123,180,.1);
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+.invoice-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  margin-bottom:20px;
+}
+
+.invoice-number{
+  background:#eaf7fb;
+  border-left:5px solid #087bb4;
+  padding:14px 18px;
+  border-radius:10px;
+  font-weight:bold;
+  color:#082653;
+}
+
+.products-wrap{
+  overflow-x:auto;
+}
+
+.products{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+
+.products th{
+  background:#082653;
+  color:white;
+  padding:11px;
+  text-align:left;
+}
+
+.products td{
+  padding:8px;
+  border-bottom:1px solid #e0e7ec;
+}
+
+.products input,
+.products select{
+  padding:9px;
+}
+
+.products .desc{
+  min-width:260px;
+}
+
+.products .unit{
+  min-width:130px;
+}
+
+.products .qty{
+  min-width:100px;
+}
+
+.products .price{
+  min-width:120px;
+}
+
+.products .total{
+  min-width:130px;
+  font-weight:bold;
+}
+
+.delete-btn{
+  border:0;
+  background:#ffe8e8;
+  color:#c62828;
+  border-radius:8px;
+  padding:9px 11px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.add-btn{
+  margin-top:15px;
+  border:0;
+  background:#10a9a5;
+  color:white;
+  padding:12px 17px;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.add-btn:hover{
+  background:#078d89;
+}
+
+.totals{
+  width:340px;
+  max-width:100%;
+  margin-left:auto;
+  margin-top:20px;
+}
+
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  padding:9px 0;
+  border-bottom:1px solid #e2e7eb;
+}
+
+.total-row.final{
+  font-size:20px;
+  font-weight:bold;
+  color:#082653;
+  border-bottom:0;
+}
+
+.buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:12px 18px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.btn-primary{
+  background:#087bb4;
+  color:white;
+}
+
+.btn-success{
+  background:#10a9a5;
+  color:white;
+}
+
+.btn-dark{
+  background:#082653;
+  color:white;
+}
+
+.btn-danger{
+  background:#d9363e;
+  color:white;
+}
+
+.btn-light{
+  background:#edf2f5;
+  color:#17212b;
+}
+
+.btn:hover{
+  opacity:.9;
+}
+
+.search-box{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.search-box input{
+  flex:1;
+}
+
+.invoice-list{
+  display:grid;
+  gap:12px;
+}
+
+.invoice-item{
+  border:1px solid #dbe4ea;
+  border-radius:12px;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.invoice-item strong{
+  color:#082653;
+}
+
+.qr-center{
+  text-align:center;
+}
+
+.qr-box{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  padding:20px;
+  border:1px solid #d9e2e8;
+  border-radius:15px;
+  background:#fafcfd;
+}
+
+#systemQR,
+#openedInvoiceQR{
+  display:flex;
+  justify-content:center;
+}
+
+#reader{
+  max-width:500px;
+  margin:auto;
+}
+
+.scanner-box{
+  max-width:600px;
+  margin:auto;
+}
+
+.opened-invoice{
+  background:white;
+  border:1px solid #dbe3e9;
+  border-radius:15px;
+  padding:25px;
+}
+
+.opened-head{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:flex-start;
+  border-bottom:2px solid #082653;
+  padding-bottom:18px;
+  margin-bottom:20px;
+}
+
+.opened-head h2{
+  margin:0 0 7px;
+  color:#082653;
+}
+
+.opened-meta{
+  text-align:right;
+}
+
+.opened-parties{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:25px;
+}
+
+.party-box{
+  border:1px solid #d9e2e8;
+  border-radius:10px;
+  padding:15px;
+}
+
+.party-box h3{
+  margin-top:0;
+  color:#087bb4;
+}
+
+.opened-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.opened-table th{
+  background:#082653;
+  color:white;
+  padding:10px;
+  text-align:left;
+}
+
+.opened-table td{
+  border:1px solid #d7e0e6;
+  padding:9px;
+}
+
+.opened-bottom{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  margin-top:25px;
+}
+
+.opened-notes{
+  border:1px solid #d9e2e8;
+  padding:15px;
+  border-radius:10px;
+  min-height:100px;
+}
+
+.signature-area{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+  margin-top:40px;
+}
+
+.signature{
+  border-top:1px solid #555;
+  padding-top:8px;
+  text-align:center;
+}
+
+.alert{
+  padding:13px;
+  border-radius:10px;
+  margin-bottom:15px;
+  display:none;
+}
+
+.alert.success{
+  background:#e6f8ef;
+  color:#14733d;
+}
+
+.alert.error{
+  background:#ffe9e9;
+  color:#a32121;
+}
+
+@media(max-width:800px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .opened-parties,
+  .opened-bottom,
+  .signature-area{
+    grid-template-columns:1fr;
+  }
+
+  .opened-head{
+    flex-direction:column;
+  }
+
+  .opened-meta{
+    text-align:left;
+  }
+
+  .invoice-item{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+
+
+/* =========================
+   A4 PDF
+   ========================= */
+
+@page{
+  size:A4;
+  margin:8mm;
+}
+
+@media print{
+
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  html,
+  body{
+    background:white !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  header,
+  .nav,
+  .no-print,
+  #newInvoicePage,
+  #searchPage,
+  #systemPage,
+  #scannerPage{
+    display:none !important;
+  }
+
+  .container{
+    max-width:none !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  #openedPage{
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  #openedPage > .card{
+    display:block !important;
+    width:100% !important;
+    box-shadow:none !important;
+    border:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .opened-invoice{
+    display:block !important;
+    width:100% !important;
+    border:0 !important;
+    border-radius:0 !important;
+    padding:2mm !important;
+    margin:0 !important;
+    background:white !important;
+  }
+
+  .opened-invoice table,
+  .opened-table{
+    width:100% !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+    border-collapse:collapse !important;
+    margin-top:12px !important;
+    font-size:12px !important;
+  }
+
+  .opened-invoice table th,
+  .opened-invoice table td,
+  .opened-table th,
+  .opened-table td{
+    border:1px solid #8d99a3 !important;
+    padding:7px 6px !important;
+    vertical-align:middle !important;
+    overflow:hidden !important;
+  }
+
+  .opened-invoice table th:nth-child(1),
+  .opened-invoice table td:nth-child(1),
+  .opened-table th:nth-child(1),
+  .opened-table td:nth-child(1){
+    width:6% !important;
+    text-align:center !important;
+  }
+
+  .opened-invoice table th:nth-child(2),
+  .opened-invoice table td:nth-child(2),
+  .opened-table th:nth-child(2),
+  .opened-table td:nth-child(2){
+    width:38% !important;
+    text-align:left !important;
+    word-break:break-word !important;
+  }
+
+  .opened-invoice table th:nth-child(3),
+  .opened-invoice table td:nth-child(3),
+  .opened-table th:nth-child(3),
+  .opened-table td:nth-child(3){
+    width:14% !important;
+    text-align:center !important;
+  }
+
+  .opened-invoice table th:nth-child(4),
+  .opened-invoice table td:nth-child(4),
+  .opened-table th:nth-child(4),
+  .opened-table td:nth-child(4){
+    width:12% !important;
+    text-align:center !important;
+  }
+
+  .opened-invoice table th:nth-child(5),
+  .opened-invoice table td:nth-child(5),
+  .opened-table th:nth-child(5),
+  .opened-table td:nth-child(5){
+    width:15% !important;
+    text-align:right !important;
+  }
+
+  .opened-invoice table th:nth-child(6),
+  .opened-invoice table td:nth-child(6),
+  .opened-table th:nth-child(6),
+  .opened-table td:nth-child(6){
+    width:15% !important;
+    text-align:right !important;
+  }
+
+  .opened-invoice table th,
+  .opened-table th{
+    background:#082653 !important;
+    color:white !important;
+    font-weight:bold !important;
+  }
+
+  .opened-invoice table tr,
+  .opened-table tr{
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+  }
+
+  .totals{
+    width:320px !important;
+    max-width:100% !important;
+    margin-left:auto !important;
+    margin-top:15px !important;
+  }
+
+  .qr-box{
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+    border:1px solid #ccd5dc !important;
+    background:white !important;
+  }
+
+  #openedInvoiceQR{
+    display:flex !important;
+    justify-content:center !important;
+  }
+
+  #openedInvoiceQR img,
+  #openedInvoiceQR canvas{
+    width:150px !important;
+    height:150px !important;
+  }
+
+  .opened-bottom{
+    page-break-inside:avoid !important;
+  }
+
+  .signature-area{
+    page-break-inside:avoid !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="header-inner">
+
+    <div class="brand">
+
+      <div class="logo">€</div>
+
+      <div>
+        <h1>Sistemi i Faturave</h1>
+        <p>Krijo, ruaj, kërko dhe printo faturat</p>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="nav">
+
+    <button onclick="showPage('newInvoicePage')">
+      ➕ Faturë e re
+    </button>
+
+    <button onclick="showPage('searchPage');loadInvoices()">
+      🔎 Kërko faturë
+    </button>
+
+    <button onclick="showPage('systemPage')">
+      📱 QR i sistemit
+    </button>
+
+    <button onclick="showPage('scannerPage')">
+      📷 Skanoni QR
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =========================
+     FATURË E RE
+     ========================= -->
+
+<section id="newInvoicePage" class="page active">
+
+  <div class="card">
+
+    <div class="invoice-top">
+
+      <div>
+        <h2>Faturë e re</h2>
+        <p>Krijo një faturë të re.</p>
+      </div>
+
+      <div class="invoice-number">
+        Nr. faturës:
+        <span id="invoiceNumber"></span>
+      </div>
+
+    </div>
+
+
+    <div id="message" class="alert"></div>
+
+
+    <div class="section-title">
+      🏢 Të dhënat e shitësit
+    </div>
+
+    <div class="grid">
+
+      <div class="field">
+        <label>Emri i kompanisë</label>
+        <input id="sellerCompany">
+      </div>
+
+      <div class="field">
+        <label>NUI</label>
+        <input id="sellerNUI">
+      </div>
+
+      <div class="field">
+        <label>Adresa</label>
+        <input id="sellerAddress">
+      </div>
+
+      <div class="field">
+        <label>Qyteti</label>
+        <input id="sellerCity">
+      </div>
+
+    </div>
+
+
+    <div class="section-title" style="margin-top:25px;">
+      👤 Të dhënat e blerësit
+    </div>
+
+    <div class="grid">
+
+      <div class="field">
+        <label>Emri i kompanisë / personit</label>
+        <input id="buyerCompany">
+      </div>
+
+      <div class="field">
+        <label>NUI</label>
+        <input id="buyerNUI">
+      </div>
+
+      <div class="field">
+        <label>Adresa</label>
+        <input id="buyerAddress">
+      </div>
+
+      <div class="field">
+        <label>Qyteti</label>
+        <input id="buyerCity">
+      </div>
+
+    </div>
+
+
+    <div class="section-title" style="margin-top:25px;">
+      📦 Produktet / Shërbimet
+    </div>
+
+
+    <div class="products-wrap">
+
+      <table class="products">
+
+        <thead>
+
+          <tr>
+            <th>Përshkrimi</th>
+            <th>Njësia</th>
+            <th>Sasia</th>
+            <th>Çmimi</th>
+            <th>Totali</th>
+            <th></th>
+          </tr>
+
+        </thead>
+
+        <tbody id="productBody"></tbody>
+
+      </table>
+
+    </div>
+
+
+    <button class="add-btn" onclick="addProduct()">
+      + Shto produkt
+    </button>
+
+
+    <div class="grid" style="margin-top:25px;">
+
+      <div class="field">
+
+        <label>Monedha</label>
+
+        <select id="currency">
+
+          <option value="€">€ Euro</option>
+          <option value="$">$ Dollar</option>
+          <option value="CHF">CHF</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>TVSH %</label>
+
+        <input
+          id="vat"
+          type="number"
+          value="0"
+          min="0"
+          step="0.01"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>Zbritja</label>
+
+        <input
+          id="discount"
+          type="number"
+          value="0"
+          min="0"
+          step="0.01"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>Pagesa</label>
+
+        <select id="payment">
+
+          <option>Cash</option>
+          <option>Bankë</option>
+          <option>Kartë</option>
+          <option>Transfer</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>Data</label>
+
+        <input id="date" type="date">
+
+      </div>
+
+
+      <div class="field full">
+
+        <label>Shënime</label>
+
+        <textarea id="notes"></textarea>
+
+      </div>
+
+    </div>
+
+
+    <div class="totals">
+
+      <div class="total-row">
+
+        <span>Nëntotali:</span>
+
+        <strong id="subtotal">
+          0.00 €
+        </strong>
+
+      </div>
+
+
+      <div class="total-row">
+
+        <span>TVSH:</span>
+
+        <strong id="vatAmount">
+          0.00 €
+        </strong>
+
+      </div>
+
+
+      <div class="total-row">
+
+        <span>Zbritja:</span>
+
+        <strong id="discountAmount">
+          0.00 €
+        </strong>
+
+      </div>
+
+
+      <div class="total-row final">
+
+        <span>TOTALI:</span>
+
+        <strong id="grandTotal">
+          0.00 €
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="buttons">
+
+      <button
+        class="btn btn-success"
+        onclick="saveInvoice()"
+      >
+        💾 Ruaj faturën
+      </button>
+
+
+      <button
+        class="btn btn-primary"
+        onclick="previewCurrentInvoice()"
+      >
+        👁️ Shiko faturën
+      </button>
+
+
+      <button
+        class="btn btn-light"
+        onclick="newInvoice()"
+      >
+        🔄 Pastro
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     KËRKO FATURË
+     ========================= -->
+
+<section id="searchPage" class="page">
+
+  <div class="card">
+
+    <h2>🔎 Kërko faturë</h2>
+
+    <div class="search-box">
+
+      <input
+        id="searchInput"
+        placeholder="Shkruaj numrin e faturës..."
+        oninput="loadInvoices()"
+      >
+
+      <button
+        class="btn btn-primary"
+        onclick="loadInvoices()"
+      >
+        Kërko
+      </button>
+
+    </div>
+
+
+    <div id="invoiceList" class="invoice-list"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     QR SISTEMI
+     ========================= -->
+
+<section id="systemPage" class="page">
+
+  <div class="card qr-center">
+
+    <h2>📱 QR i sistemit</h2>
+
+    <p>
+      Ky është QR-i i përgjithshëm i sistemit.
+    </p>
+
+
+    <div class="qr-box">
+
+      <div id="systemQR"></div>
+
+      <strong>
+        QR i sistemit
+      </strong>
+
+    </div>
+
+
+    <div
+      class="buttons"
+      style="justify-content:center;"
+    >
+
+      <button
+        class="btn btn-primary"
+        onclick="downloadSystemQR()"
+      >
+        💾 Ruaj QR
+      </button>
+
+
+      <button
+        class="btn btn-dark"
+        onclick="printSystemQR()"
+      >
+        🖨️ Printo QR
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     SCANNER
+     ========================= -->
+
+<section id="scannerPage" class="page">
+
+  <div class="card">
+
+    <h2>📷 Skanoni QR</h2>
+
+    <p>
+      Skanoni QR-in e një fature për ta hapur atë.
+    </p>
+
+
+    <div class="scanner-box">
+
+      <div id="reader"></div>
+
+    </div>
+
+
+    <div
+      class="buttons"
+      style="justify-content:center;"
+    >
+
+      <button
+        class="btn btn-primary"
+        onclick="startScanner()"
+      >
+        📷 Nis skanimin
+      </button>
+
+
+      <button
+        class="btn btn-danger"
+        onclick="stopScanner()"
+      >
+        ⛔ Ndal
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     FATURA E HAPUR
+     ========================= -->
+
+<section id="openedPage" class="page">
+
+  <div class="card">
+
+    <div class="buttons no-print">
+
+      <button
+        class="btn btn-light"
+        onclick="goBackToSearch()"
+      >
+        ← Kthehu
+      </button>
+
+
+      <button
+        class="btn btn-primary"
+        onclick="printOpenedInvoice()"
+      >
+        🖨️ Printo / Ruaj PDF
+      </button>
+
+    </div>
+
+
+    <div id="openedInvoiceContainer"></div>
+
+  </div>
+
+</section>
+
+
+</div>
+
+
+<script>
+
+/* =========================
+   GJENDJA
+   ========================= */
+
+let currentOpenedInvoice = null;
+let scanner = null;
+let scannerRunning = false;
+
+
+/* =========================
+   FAQET
+   ========================= */
+
+function showPage(id){
+
+  document.querySelectorAll(".page").forEach(page=>{
+    page.classList.remove("active");
+  });
+
+  const page=document.getElementById(id);
+
+  if(page){
+    page.classList.add("active");
+  }
+
+  if(id==="systemPage"){
+    createSystemQR();
+  }
+
+}
+
+
+/* =========================
+   DATA
+   ========================= */
+
+function today(){
+
+  const d=new Date();
+
+  const month=
+    String(d.getMonth()+1).padStart(2,"0");
+
+  const day=
+    String(d.getDate()).padStart(2,"0");
+
+  return `${d.getFullYear()}-${month}-${day}`;
+
+}
+
+
+/* =========================
+   NUMRI FATURËS
+   ========================= */
+
+function getNextInvoiceNumber(){
+
+  const invoices=
+    JSON.parse(
+      localStorage.getItem("invoices") || "[]"
+    );
+
+  let max=0;
+
+  invoices.forEach(inv=>{
+
+    const match=
+      String(inv?.number || "")
+      .match(/F-(\d+)/);
+
+    if(match){
+
+      const n=parseInt(match[1],10);
+
+      if(n>max){
+        max=n;
+      }
+
+    }
+
+  });
+
+  return "F-"+String(max+1).padStart(5,"0");
+
+}
+
+
+/* =========================
+   PRODUKTI
+   ========================= */
+
+function addProduct(data=null){
+
+  const body=
+    document.getElementById("productBody");
+
+  if(!body){
+    return;
+  }
+
+
+  const tr=
+    document.createElement("tr");
+
+
+  const description=
+    data?.description || "";
+
+  const unit=
+    data?.unit || "copë";
+
+  const quantity=
+    data?.quantity ?? 1;
+
+  const price=
+    data?.price ?? 0;
+
+
+  tr.innerHTML=`
+
+    <td>
+
+      <input
+        class="desc"
+        placeholder="Përshkrimi"
+        value="${escapeHTML(description)}"
+        oninput="calculateTotals()"
+      >
+
+    </td>
+
+
+    <td>
+
+      <select
+        class="unit"
+        onchange="calculateTotals()"
+      >
+
+        <option
+          value="copë"
+          ${unit==="copë"?"selected":""}
+        >
+          copë
+        </option>
+
+        <option
+          value="kilogram"
+          ${unit==="kilogram"?"selected":""}
+        >
+          kilogram
+        </option>
+
+        <option
+          value="pako"
+          ${unit==="pako"?"selected":""}
+        >
+          pako
+        </option>
+
+        <option
+          value="l"
+          ${unit==="l"?"selected":""}
+        >
+          l
+        </option>
+
+      </select>
+
+    </td>
+
+
+    <td>
+
+      <input
+        class="qty"
+        type="number"
+        min="0"
+        step="0.01"
+        value="${quantity}"
+        oninput="calculateTotals()"
+      >
+
+    </td>
+
+
+    <td>
+
+      <input
+        class="price"
+        type="number"
+        min="0"
+        step="0.01"
+        value="${price}"
+        oninput="calculateTotals()"
+      >
+
+    </td>
+
+
+    <td class="total">
+      0.00
+    </td>
+
+
+    <td>
+
+      <button
+        class="delete-btn"
+        onclick="
+          this.closest('tr').remove();
+          calculateTotals();
+        "
+      >
+        ✕
+      </button>
+
+    </td>
+
+  `;
+
+
+  body.appendChild(tr);
+
+  calculateTotals();
+
+}
+
+
+/* =========================
+   LLOGARIT TOTALIN
+   ========================= */
+
+function calculateTotals(){
+
+  let subtotal=0;
+
+
+  document
+    .querySelectorAll("#productBody tr")
+    .forEach(row=>{
+
+      const qty=
+        parseFloat(
+          row.querySelector(".qty")?.value
+        ) || 0;
+
+
+      const price=
+        parseFloat(
+          row.querySelector(".price")?.value
+        ) || 0;
+
+
+      const total=
+        qty*price;
+
+
+      subtotal+=total;
+
+
+      const totalCell=
+        row.querySelector(".total");
+
+
+      if(totalCell){
+
+        totalCell.textContent=
+          total.toFixed(2);
+
+      }
+
+    });
+
+
+  const vat=
+    parseFloat(
+      document.getElementById("vat")?.value
+    ) || 0;
+
+
+  const discount=
+    parseFloat(
+      document.getElementById("discount")?.value
+    ) || 0;
+
+
+  const vatAmount=
+    subtotal*vat/100;
+
+
+  const grandTotal=
+    subtotal+vatAmount-discount;
+
+
+  const currency=
+    document.getElementById("currency")?.value || "€";
+
+
+  document.getElementById("subtotal")
+    .textContent=
+    subtotal.toFixed(2)+" "+currency;
+
+
+  document.getElementById("vatAmount")
+    .textContent=
+    vatAmount.toFixed(2)+" "+currency;
+
+
+  document.getElementById("discountAmount")
+    .textContent=
+    discount.toFixed(2)+" "+currency;
+
+
+  document.getElementById("grandTotal")
+    .textContent=
+    grandTotal.toFixed(2)+" "+currency;
+
+}
+
+
+/* =========================
+   MERR FATURËN
+   ========================= */
+
+function collectInvoice(){
+
+  const products=[];
+
+
+  document
+    .querySelectorAll("#productBody tr")
+    .forEach(row=>{
+
+      products.push({
+
+        description:
+          row.querySelector(".desc")?.value || "",
+
+        unit:
+          row.querySelector(".unit")?.value || "copë",
+
+        quantity:
+          parseFloat(
+            row.querySelector(".qty")?.value
+          ) || 0,
+
+        price:
+          parseFloat(
+            row.querySelector(".price")?.value
+          ) || 0
+
+      });
+
+    });
+
+
+  const currency=
+    document.getElementById("currency")?.value || "€";
+
+
+  const subtotal=
+    products.reduce(
+      (sum,p)=>
+        sum+
+        (Number(p.quantity)||0)*
+        (Number(p.price)||0),
+      0
+    );
+
+
+  const vat=
+    parseFloat(
+      document.getElementById("vat")?.value
+    ) || 0;
+
+
+  const discount=
+    parseFloat(
+      document.getElementById("discount")?.value
+    ) || 0;
+
+
+  const vatAmount=
+    subtotal*vat/100;
+
+
+  const total=
+    subtotal+vatAmount-discount;
+
+
+  return {
+
+    number:
+      document.getElementById("invoiceNumber")
+      ?.textContent || getNextInvoiceNumber(),
+
+    date:
+      document.getElementById("date")
+      ?.value || today(),
+
+    seller:{
+
+      company:
+        document.getElementById("sellerCompany")
+        ?.value || "",
+
+      nui:
+        document.getElementById("sellerNUI")
+        ?.value || "",
+
+      address:
+        document.getElementById("sellerAddress")
+        ?.value || "",
+
+      city:
+        document.getElementById("sellerCity")
+        ?.value || ""
+
+    },
+
+    buyer:{
+
+      company:
+        document.getElementById("buyerCompany")
+        ?.value || "",
+
+      nui:
+        document.getElementById("buyerNUI")
+        ?.value || "",
+
+      address:
+        document.getElementById("buyerAddress")
+        ?.value || "",
+
+      city:
+        document.getElementById("buyerCity")
+        ?.value || ""
+
+    },
+
+    products:products,
+
+    currency:currency,
+
+    vat:vat,
+
+    vatAmount:vatAmount,
+
+    discount:discount,
+
+    subtotal:subtotal,
+
+    total:total,
+
+    payment:
+      document.getElementById("payment")
+      ?.value || "Cash",
+
+    notes:
+      document.getElementById("notes")
+      ?.value || ""
+
+  };
+
+}
+
+
+/* =========================
+   RUAJ
+   ========================= */
+
+function saveInvoice(){
+
+  calculateTotals();
+
+  const invoice=
+    collectInvoice();
+
+
+  const invoices=
+    JSON.parse(
+      localStorage.getItem("invoices") || "[]"
+    );
+
+
+  const existing=
+    invoices.findIndex(
+      x=>x?.number===invoice.number
+    );
+
+
+  if(existing>=0){
+
+    invoices[existing]=invoice;
+
+  }else{
+
+    invoices.push(invoice);
+
+  }
+
+
+  localStorage.setItem(
+    "invoices",
+    JSON.stringify(invoices)
+  );
+
+
+  currentOpenedInvoice=
+    invoice;
+
+
+  showMessage(
+    "Fatura u ruajt me sukses.",
+    "success"
+  );
+
+}
+
+
+/* =========================
+   MESAZH
+   ========================= */
+
+function showMessage(text,type){
+
+  const el=
+    document.getElementById("message");
+
+  if(!el){
+    return;
+  }
+
+
+  el.textContent=text;
+
+  el.className=
+    "alert "+type;
+
+  el.style.display="block";
+
+
+  setTimeout(()=>{
+
+    el.style.display="none";
+
+  },3000);
+
+}
+
+
+/* =========================
+   FATURË E RE
+   ========================= */
+
+function newInvoice(){
+
+  document.getElementById("invoiceNumber")
+    .textContent=
+    getNextInvoiceNumber();
+
+
+  document.getElementById("date")
+    .value=today();
+
+
+  const ids=[
+    "sellerCompany",
+    "sellerNUI",
+    "sellerAddress",
+    "sellerCity",
+    "buyerCompany",
+    "buyerNUI",
+    "buyerAddress",
+    "buyerCity",
+    "notes"
+  ];
+
+
+  ids.forEach(id=>{
+
+    const el=
+      document.getElementById(id);
+
+    if(el){
+      el.value="";
+    }
+
+  });
+
+
+  document.getElementById("vat")
+    .value=0;
+
+  document.getElementById("discount")
+    .value=0;
+
+  document.getElementById("payment")
+    .value="Cash";
+
+  document.getElementById("currency")
+    .value="€";
+
+
+  document.getElementById("productBody")
+    .innerHTML="";
+
+
+  addProduct();
+
+  calculateTotals();
+
+  showPage("newInvoicePage");
+
+}
+
+
+/* =========================
+   PREVIEW
+   ========================= */
+
+function previewCurrentInvoice(){
+
+  calculateTotals();
+
+  const invoice=
+    collectInvoice();
+
+  showOpenedInvoice(invoice);
+
+}
+
+
+/* =========================
+   HAP FATURËN
+   ========================= */
+
+function showOpenedInvoice(invoice){
+
+  /*
+     RREGULLIMI KRYESOR:
+     Nëse invoice.products mungon,
+     përdorim [] që të mos japë
+     gabimin .map
+  */
+
+  if(!invoice || typeof invoice!=="object"){
+
+    alert("Fatura nuk është e vlefshme.");
+
+    return;
+
+  }
+
+
+  const products=
+    Array.isArray(invoice.products)
+      ? invoice.products
+      : [];
+
+
+  const seller=
+    invoice.seller &&
+    typeof invoice.seller==="object"
+      ? invoice.seller
+      : {};
+
+
+  const buyer=
+    invoice.buyer &&
+    typeof invoice.buyer==="object"
+      ? invoice.buyer
+      : {};
+
+
+  currentOpenedInvoice={
+    ...invoice,
+    products:products,
+    seller:seller,
+    buyer:buyer
+  };
+
+
+  document
+    .querySelectorAll(".page")
+    .forEach(page=>{
+      page.classList.remove("active");
+    });
+
+
+  document
+    .getElementById("openedPage")
+    .classList.add("active");
+
+
+  const container=
+    document.getElementById(
+      "openedInvoiceContainer"
+    );
+
+
+  /*
+     TANI .map ËSHTË I SIGURT
+  */
+
+  const rows=
+    products.map((p,index)=>{
+
+      p=p || {};
+
+
+      const quantity=
+        Number(p.quantity)||0;
+
+
+      const price=
+        Number(p.price)||0;
+
+
+      const line=
+        quantity*price;
+
+
+      return `
+
+        <tr>
+
+          <td>
+            ${index+1}
+          </td>
+
+          <td>
+            ${escapeHTML(p.description || "")}
+          </td>
+
+          <td>
+            ${escapeHTML(p.unit || "")}
+          </td>
+
+          <td>
+            ${quantity.toFixed(2)}
+          </td>
+
+          <td>
+            ${price.toFixed(2)}
+            ${escapeHTML(invoice.currency || "€")}
+          </td>
+
+          <td>
+            ${line.toFixed(2)}
+            ${escapeHTML(invoice.currency || "€")}
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join("");
+
+
+  container.innerHTML=`
+
+    <div class="opened-invoice">
+
+      <div class="opened-head">
+
+        <div>
+
+          <h2>FATURË</h2>
+
+          <div>
+            Nr. faturës:
+            <strong>
+              ${escapeHTML(invoice.number || "")}
+            </strong>
+          </div>
+
+          <div>
+            Data:
+            ${escapeHTML(invoice.date || "")}
+          </div>
+
+        </div>
+
+
+        <div class="opened-meta">
+
+          <strong>
+            ${escapeHTML(seller.company || "")}
+          </strong>
+
+          <br>
+
+          NUI:
+          ${escapeHTML(seller.nui || "")}
+
+          <br>
+
+          ${escapeHTML(seller.address || "")}
+
+          <br>
+
+          ${escapeHTML(seller.city || "")}
+
+        </div>
+
+      </div>
+
+
+      <div class="opened-parties">
+
+        <div class="party-box">
+
+          <h3>Shitësi</h3>
+
+          <strong>
+            ${escapeHTML(seller.company || "")}
+          </strong>
+
+          <br>
+
+          NUI:
+          ${escapeHTML(seller.nui || "")}
+
+          <br>
+
+          ${escapeHTML(seller.address || "")}
+
+          <br>
+
+          ${escapeHTML(seller.city || "")}
+
+        </div>
+
+
+        <div class="party-box">
+
+          <h3>Blerësi</h3>
+
+          <strong>
+            ${escapeHTML(buyer.company || "")}
+          </strong>
+
+          <br>
+
+          NUI:
+          ${escapeHTML(buyer.nui || "")}
+
+          <br>
+
+          ${escapeHTML(buyer.address || "")}
+
+          <br>
+
+          ${escapeHTML(buyer.city || "")}
+
+        </div>
+
+      </div>
+
+
+      <table class="opened-table">
+
+        <thead>
+
+          <tr>
+
+            <th>Nr.</th>
+            <th>Përshkrimi</th>
+            <th>Njësia</th>
+            <th>Sasia</th>
+            <th>Çmimi</th>
+            <th>Totali</th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${
+            rows ||
+            `
+              <tr>
+                <td colspan="6">
+                  Nuk ka produkte.
+                </td>
+              </tr>
+            `
+          }
+
+        </tbody>
+
+      </table>
+
+
+      <div class="opened-bottom">
+
+        <div>
+
+          <div class="opened-notes">
+
+            <strong>Shënime</strong>
+
+            <p>
+              ${escapeHTML(invoice.notes || "")}
+            </p>
+
+            <p>
+
+              <strong>
+                Mënyra e pagesës:
+              </strong>
+
+              ${escapeHTML(invoice.payment || "")}
+
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="totals">
+
+          <div class="total-row">
+
+            <span>Nëntotali</span>
+
+            <strong>
+
+              ${Number(invoice.subtotal || 0).toFixed(2)}
+
+              ${escapeHTML(invoice.currency || "€")}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-row">
+
+            <span>
+              TVSH (${Number(invoice.vat || 0)}%)
+            </span>
+
+            <strong>
+
+              ${Number(invoice.vatAmount || 0).toFixed(2)}
+
+              ${escapeHTML(invoice.currency || "€")}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-row">
+
+            <span>Zbritja</span>
+
+            <strong>
+
+              ${Number(invoice.discount || 0).toFixed(2)}
+
+              ${escapeHTML(invoice.currency || "€")}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-row final">
+
+            <span>TOTALI</span>
+
+            <strong>
+
+              ${Number(invoice.total || 0).toFixed(2)}
+
+              ${escapeHTML(invoice.currency || "€")}
+
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="qr-box"
+        style="margin-top:25px;text-align:center;"
+      >
+
+        <strong>
+          QR e faturës
+        </strong>
+
+        <div id="openedInvoiceQR"></div>
+
+        <small>
+          Skanoni për ta hapur këtë faturë.
+        </small>
+
+      </div>
+
+
+      <div class="signature-area">
+
+        <div class="signature">
+          Nënshkrimi i shitësit
+        </div>
+
+        <div class="signature">
+          Nënshkrimi i blerësit
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  createInvoiceQR(
+    currentOpenedInvoice
+  );
+
+}
+
+
+/* =========================
+   QR FATURA
+   ========================= */
+
+function createInvoiceQR(invoice){
+
+  const box=
+    document.getElementById(
+      "openedInvoiceQR"
+    );
+
+
+  if(!box){
+    return;
+  }
+
+
+  box.innerHTML="";
+
+
+  try{
+
+    const json=
+      JSON.stringify(invoice);
+
+
+    const encoded=
+      encodeURIComponent(
+        btoa(
+          unescape(
+            encodeURIComponent(json)
+          )
+        )
+      );
+
+
+    const base=
+      window.location.href
+        .split("#")[0];
+
+
+    const url=
+      base+
+      "#invoice="+
+      encoded;
+
+
+    new QRCode(box,{
+
+      text:url,
+
+      width:150,
+
+      height:150,
+
+      correctLevel:
+        QRCode.CorrectLevel.M
+
+    });
+
+  }catch(error){
+
+    console.error(
+      "Gabim QR:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================
+   HAP NGA QR
+   ========================= */
+
+function openInvoiceFromHash(){
+
+  const hash=
+    window.location.hash;
+
+
+  if(!hash.startsWith("#invoice=")){
+    return;
+  }
+
+
+  try{
+
+    const encoded=
+      decodeURIComponent(
+        hash.substring(
+          "#invoice=".length
+        )
+      );
+
+
+    const json=
+      decodeURIComponent(
+        escape(
+          atob(encoded)
+        )
+      );
+
+
+    const invoice=
+      JSON.parse(json);
+
+
+    /*
+       Sigurojmë që edhe faturat
+       e vjetra të kenë products
+    */
+
+    if(!Array.isArray(invoice.products)){
+
+      invoice.products=[];
+
+    }
+
+
+    showOpenedInvoice(invoice);
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "QR-i i faturës nuk mund të lexohet."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   QR SISTEMI
+   ========================= */
+
+function createSystemQR(){
+
+  const box=
+    document.getElementById(
+      "systemQR"
+    );
+
+
+  if(!box){
+    return;
+  }
+
+
+  box.innerHTML="";
+
+
+  const url=
+    window.location.href
+      .split("#")[0];
+
+
+  new QRCode(box,{
+
+    text:url,
+
+    width:220,
+
+    height:220,
+
+    correctLevel:
+      QRCode.CorrectLevel.M
+
+  });
+
+}
+
+
+function downloadSystemQR(){
+
+  const img=
+    document.querySelector(
+      "#systemQR img"
+    );
+
+
+  if(!img){
+    return;
+  }
+
+
+  const a=
+    document.createElement("a");
+
+
+  a.href=img.src;
+
+  a.download=
+    "QR-Sistemi-i-Faturave.png";
+
+
+  a.click();
+
+}
+
+
+function printSystemQR(){
+
+  window.print();
+
+}
+
+
+/* =========================
+   KËRKO FATURAT
+   ========================= */
+
+function loadInvoices(){
+
+  const list=
+    document.getElementById(
+      "invoiceList"
+    );
+
+
+  const search=
+    (
+      document.getElementById(
+        "searchInput"
+      )?.value || ""
+    )
+    .toLowerCase()
+    .trim();
+
+
+  const invoices=
+    JSON.parse(
+      localStorage.getItem("invoices") || "[]"
+    );
+
+
+  const filtered=
+    invoices.filter(inv=>{
+
+      if(!inv){
+        return false;
+      }
+
+      return String(inv.number || "")
+        .toLowerCase()
+        .includes(search);
+
+    });
+
+
+  if(filtered.length===0){
+
+    list.innerHTML=`
+
+      <div class="card">
+        Nuk u gjet asnjë faturë.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML=
+    filtered
+      .slice()
+      .reverse()
+      .map(inv=>{
+
+        const buyer=
+          inv.buyer &&
+          typeof inv.buyer==="object"
+            ? inv.buyer
+            : {};
+
+
+        return `
+
+          <div class="invoice-item">
+
+            <div>
+
+              <strong>
+                ${escapeHTML(inv.number || "")}
+              </strong>
+
+              <br>
+
+              ${escapeHTML(inv.date || "")}
+
+              <br>
+
+              ${escapeHTML(
+                buyer.company || ""
+              )}
+
+              <br>
+
+              <strong>
+
+                ${Number(inv.total || 0).toFixed(2)}
+
+                ${escapeHTML(
+                  inv.currency || "€"
+                )}
+
+              </strong>
+
+            </div>
+
+
+            <div class="buttons">
+
+              <button
+                class="btn btn-primary"
+                onclick="
+                  openSavedInvoiceByNumber(
+                    '${escapeJS(inv.number || "")}'
+                  )
+                "
+              >
+                👁️ Hape
+              </button>
+
+
+              <button
+                class="btn btn-danger"
+                onclick="
+                  deleteInvoice(
+                    '${escapeJS(inv.number || "")}'
+                  )
+                "
+              >
+                🗑️ Fshi
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+}
+
+
+/* =========================
+   HAP FATURËN E RUAJTUR
+   ========================= */
+
+function openSavedInvoiceByNumber(number){
+
+  const invoices=
+    JSON.parse(
+      localStorage.getItem("invoices") || "[]"
+    );
+
+
+  const invoice=
+    invoices.find(
+      x=>x?.number===number
+    );
+
+
+  if(invoice){
+
+    /*
+       Rregullim për faturat e vjetra
+    */
+
+    if(!Array.isArray(invoice.products)){
+
+      invoice.products=[];
+
+    }
+
+
+    if(
+      !invoice.seller ||
+      typeof invoice.seller!=="object"
+    ){
+
+      invoice.seller={};
+
+    }
+
+
+    if(
+      !invoice.buyer ||
+      typeof invoice.buyer!=="object"
+    ){
+
+      invoice.buyer={};
+
+    }
+
+
+    showOpenedInvoice(invoice);
+
+  }
+
+}
+
+
+/* =========================
+   FSHI FATURË
+   ========================= */
+
+function deleteInvoice(number){
+
+  if(
+    !confirm(
+      "A dëshiron ta fshish këtë faturë?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  let invoices=
+    JSON.parse(
+      localStorage.getItem("invoices") || "[]"
+    );
+
+
+  invoices=
+    invoices.filter(
+      x=>x?.number!==number
+    );
+
+
+  localStorage.setItem(
+    "invoices",
+    JSON.stringify(invoices)
+  );
+
+
+  loadInvoices();
+
+}
+
+
+/* =========================
+   PRINT
+   ========================= */
+
+function printInvoice(invoice){
+
+  showOpenedInvoice(invoice);
+
+
+  setTimeout(()=>{
+
+    window.print();
+
+  },300);
+
+}
+
+
+function printOpenedInvoice(){
+
+  if(!currentOpenedInvoice){
+
+    return;
+
+  }
+
+
+  window.print();
+
+}
+
+
+function goBackToSearch(){
+
+  showPage("searchPage");
+
+  loadInvoices();
+
+}
+
+
+/* =========================
+   SCANNER
+   ========================= */
+
+async function startScanner(){
+
+  if(scannerRunning){
+
+    return;
+
+  }
+
+
+  try{
+
+    scanner=
+      new Html5Qrcode("reader");
+
+
+    await scanner.start(
+
+      {
+        facingMode:"environment"
+      },
+
+      {
+        fps:10,
+        qrbox:250
+      },
+
+      decodedText=>{
+
+        handleScannedQR(decodedText);
+
+      },
+
+      errorMessage=>{}
+
+    );
+
+
+    scannerRunning=true;
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "Nuk mund të hapet kamera. Kontrollo lejen e kamerës."
+    );
+
+  }
+
+}
+
+
+async function stopScanner(){
+
+  if(
+    !scanner ||
+    !scannerRunning
+  ){
+
+    return;
+
+  }
+
+
+  try{
+
+    await scanner.stop();
+
+    scanner.clear();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  scannerRunning=false;
+
+}
+
+
+function handleScannedQR(text){
+
+  if(
+    typeof text==="string" &&
+    text.includes("#invoice=")
+  ){
+
+    const hash=
+      text.substring(
+        text.indexOf("#invoice=")
+      );
+
+
+    window.location.hash=
+      hash;
+
+
+    openInvoiceFromHash();
+
+    stopScanner();
+
+    return;
+
+  }
+
+
+  if(
+    typeof text==="string" &&
+    text.startsWith("http")
+  ){
+
+    window.location.href=text;
+
+    return;
+
+  }
+
+
+  alert(
+    "Ky QR nuk është QR i një fature."
+  );
+
+}
+
+
+/* =========================
+   SIGURIA E TEKSTIT
+   ========================= */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeJS(value){
+
+  return String(value ?? "")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/\n/g,"\\n")
+    .replace(/\r/g,"\\r");
+
+}
+
+
+/* =========================
+   NISJA
+   ========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+
+    document.getElementById("date")
+      .value=today();
+
+
+    document.getElementById(
+      "invoiceNumber"
+    ).textContent=
+      getNextInvoiceNumber();
+
+
+    addProduct();
+
+
+    document.getElementById("vat")
+      .addEventListener(
+        "input",
+        calculateTotals
+      );
+
+
+    document.getElementById("discount")
+      .addEventListener(
+        "input",
+        calculateTotals
+      );
+
+
+    document.getElementById("currency")
+      .addEventListener(
+        "change",
+        calculateTotals
+      );
+
+
+    openInvoiceFromHash();
+
+  }
+);
+
+
+window.addEventListener(
+  "hashchange",
+  openInvoiceFromHash
+);
+
+</script>
+
+</body>
+</html>
